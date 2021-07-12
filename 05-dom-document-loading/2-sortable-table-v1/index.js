@@ -4,12 +4,12 @@ export default class SortableTable {
 
   constructor(headerConfig = [], data = [])
   {
-    if(Array.isArray(headerConfig) && headerConfig.length !== 0)
+    if(Array.isArray(headerConfig))
       this.headerConfig = [...headerConfig];
     else
       this.headerConfig = [];
 
-    if(Array.isArray(data) && data.length !== 0)
+    if(Array.isArray(data))
       this.data = [...data];
     else
       this.data =[];
@@ -151,8 +151,15 @@ export default class SortableTable {
       compare = this.compareString;
 
 
-      dataSort = dataSort.sort(function (item1, item2) {
-      return compare(item1[fieldValue], item2[fieldValue], orderValue)
+      dataSort = dataSort.sort(function (item1, item2) 
+      {
+        const order = {
+          asc: 1,
+          desc: -1,
+        }
+        if(!(orderValue in order))
+          return;
+      return compare(item1[fieldValue], item2[fieldValue], order[orderValue])
     });
 
 
@@ -164,27 +171,13 @@ export default class SortableTable {
   compareString(value1, value2, orderValue) 
   {
     // Сортировка для строк.
-    const order = {
-        asc: 1,
-        desc: -1,
-    }
-    if(!(orderValue in order))
-        return;
-
-    return order[orderValue] * value1.localeCompare(value2,[ "ru","en",],{caseFirst:"upper"}); 
+    return orderValue * value1.localeCompare(value2,[ "ru","en",],{caseFirst:"upper"}); 
   }
 
   compareNumber(value1, value2, orderValue)
   {
     // Сортировка для чисел.
-    const order = {
-      asc: 1,
-      desc: -1,
-    }
-    if(!(orderValue in order))
-      return;
-
-    return order[orderValue] * (value1 - value2);
+    return orderValue * (value1 - value2);
   }
 
   remove()
